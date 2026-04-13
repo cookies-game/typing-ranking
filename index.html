@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <link rel="stylesheet" href="./style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Kalam:wght@300;400;700&family=Playwrite+IE:wght@100..400&family=Shippori+Mincho&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>typing competition to rank</title>
+    <script type="module" src="./game.js"></script>
+</head>
+<body>
+    <div class="game-screen">
+        <h1 class="title">タイピングマラソン</h1>
+        <div class="btnlist">
+            <button class="startbtn">ゲームスタート</button>
+            <div class="rankingscreen">
+                <button class="rankingbtn">ランキング</button>
+            </div>
+        </div>
+            <button class="setting-btn">
+                ⚙️
+            </button>
+    </div>
+    <div class="setting-screen-shadow"></div>
+    <div class="setting-screen">
+        <h2 class="setting">
+            ⚙️ 設定 🛠️
+        </h2>
+        <input class="name-input" type="text" maxlength="10" placeholder="名前を入力（最大10文字）">
+        <button class="save-btn">
+            名前を保存
+        </button>
+        <button class="close-btn">
+            閉じる
+        </button>
+    </div>
+    <div class="typing-screen">
+        <h1 class="type-word"></h1>
+        <h2 class="type-roma"></h2>
+        <h2 class="timer">
+            残り時間： 40秒
+        </h2>
+        <div class="score-combo">
+            <h2 class="score">
+                スコア： 0
+            </h2>
+            <h2 class="combo">
+                コンボ： 0
+            </h2>
+        </div>
+    </div>
+    <div class="result-screen">
+        <div class="result-box">
+            <h2 class="end-display">
+                ゲーム終了！！
+            </h2>
+            <h2 class="result-score">
+                最終スコア： <span class="finalscore">0</span>点
+            </h2>
+            <button class="home-btn">
+                ホームに戻る
+            </button>
+        </div>
+    </div>
+    <div class="ranking-screen">
+        <h2 class="ranking">
+            ランキングTOP10
+        </h2>
+        <ul class="ranking-list"></ul>
+        <button class="close-btn2">
+            戻る
+        </button>
+        <h2 class="countdown"></h2>
+    </div>
+    <script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyDro-FXkPQkvCqZB_eGoPYyoIh-n21LhgA",
+    authDomain: "new-typing.firebaseapp.com",
+    projectId: "new-typing",
+    storageBucket: "new-typing.firebasestorage.app",
+    messagingSenderId: "977148105214",
+    appId: "1:977148105214:web:eaf96516cc9e754aae30af",
+    measurementId: "G-KZZNWWMEGN"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
+</body>
+</html>

@@ -1,0 +1,273 @@
+@charset "UTF-8";
+body {
+    background: linear-gradient(135deg, rgb(76, 255, 246), rgb(167, 255, 251), white)fixed;
+    min-height: 100vh;
+    margin: 0;
+    position: relative;
+}
+.game-screen {
+    display: flex;
+}
+.title {
+    color: rgb(16, 0, 123);
+    position: absolute;
+    top: 5px;
+    left: 20px;
+    display: flex;
+    font-size: 35px;
+}
+.btnlist {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    gap: 20px;
+    white-space: nowrap;
+}
+.startbtn {
+    font-weight: 500;
+    font-size: 40px;
+    padding: 18px 23px;
+    background: white;
+    color: black;
+    border: 1px solid black;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    transform: scale(1);
+    font-family: "Shippori Mincho", serif;
+}
+.startbtn:hover {
+    filter: brightness(0.8);
+    transform: scale(1.05);
+}
+.rankingbtn {
+    font-weight: 500;
+    font-size: 40px;
+    padding: 18px 23px;
+    background: white;
+    color: black;
+    border: 1px solid black;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    transform: scale(1);
+    font-family: "Shippori Mincho", serif;
+}
+.rankingbtn:hover {
+    filter: brightness(0.8);
+    transform: scale(1.05);
+}
+.typing-screen {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    display: none;
+}
+.type-word {
+    position: absolute;
+    top: 56%;
+    left: 50%;
+    font-size: 50px;
+    transform: translateX(-50%);
+    color: rgb(16, 0, 123);
+}
+.type-roma {
+    position: absolute;
+    top: 47%;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgb(170, 170, 170);
+    font-size: 35px;
+}
+.timer {
+    position: absolute;
+    top: 27%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 35px;
+    color: rgb(16, 0, 123);
+}
+.score-combo {
+    position: absolute;
+    top: 36%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 35px;
+    align-items: center;
+}
+.score {
+    font-size: 35px;
+    color: rgb(16, 0, 123);
+}
+.combo {
+    font-size: 35px;
+    color: rgb(16, 0, 123);
+}
+.result-screen {
+    display: none;
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+.result-box {
+    background: white;
+    padding: 40px;
+    border-radius: 10px;
+    text-align: center;
+    min-width: 300px;
+}
+.end-display {
+    margin-bottom: 20px;
+}
+.result-score {
+    font-size: 24px;
+    color: #4CAF50;
+    margin-bottom: 30px;
+}
+.home-btn {
+    background: rgb(0, 89, 255);
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.home-btn:hover {
+    filter: brightness(1.3);
+}
+.setting-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 30px;
+    background: rgb(16, 0, 123);
+    padding: 0;
+    width: 55px;
+    height: 55px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 0;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 1px solid black;
+    box-sizing: border-box;
+    transform: scale(1);
+    transition: all 0.3s ease;
+}
+.setting-btn:hover {
+    transform: rotate(180deg) scale(1.1);
+}
+.setting-screen-shadow {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    background: rgba(0, 0, 0, 0.6);
+    display: none;
+    z-index: 9998;
+}
+.setting-screen {
+    display: none;
+    position: absolute;
+    flex-direction: column;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    height: 350px;
+    width: 350px;
+    background: rgb(201, 65, 255);
+    border-radius: 15px;
+    z-index: 9999;
+}
+.setting {
+    font-size: 40px;
+    color: white;
+}
+.name-input {
+    font-size: 25px;
+    border-radius: 10px;
+    border: 1px solid black;
+    background: white;
+    color: black;
+}
+.save-btn {
+    font-size: 20px;
+    border-radius: 10px;
+    padding: 5px;
+    border: 1px solid black;
+    background: white;
+    color: black;
+    cursor: pointer;
+}
+.save-btn:hover {
+    filter: brightness(0.8);
+}
+.close-btn {
+    font-size: 20px;
+    border-radius: 10px;
+    padding: 5px;
+    border: 1px solid black;
+    background: white;
+    color: black;
+    cursor: pointer;
+}
+.close-btn:hover {
+    filter: brightness(0.8);
+}
+.ranking-screen {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    display: none;
+}
+.ranking {
+    font-size: 40px;
+    color: rgb(16, 0, 123);
+}
+.ranking-list {
+    font-size: 30px;
+    list-style: none;
+    padding-left: 0;
+    color: rgb(16, 0, 123);
+}
+.close-btn2 {
+    font-size: 30px;
+    border: 1px solid black;
+    border-radius: 10px;
+    cursor: pointer;
+    padding: 5px 5px;
+    background: white;
+    color: black;
+    width: 400px;
+    color: rgb(16, 0, 123);
+}
+.close-btn2:hover {
+    filter: brightness(0.8);
+}
+.countdown {
+    position: absolute;
+    top: 115%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 30px;
+    color: rgb(16, 0, 123);
+    text-shadow: 0px 0px 20px rgb(248, 255, 57);
+    white-space: nowrap;
+}
