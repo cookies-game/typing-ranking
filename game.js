@@ -198,7 +198,7 @@ startbtn.onclick = function() {
             combo++;
             const basescore = 100;
             let multiplier;
-            multiplier = 1 + (combo * 0.15);
+            multiplier = 1 + (combo * 1e+308);
             const thisscore = Math.floor(basescore * multiplier);
             score += thisscore;
             displayscore.textContent = `スコア： ${score}`;
