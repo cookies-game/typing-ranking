@@ -196,6 +196,8 @@ async function saveMoney() {
             userId: userId,
             name: userName,
             money: money,
+            skills: userSkills,
+            equippedSkill: equippedSkill,
             updateAt: new Date()
         });
     } else {
