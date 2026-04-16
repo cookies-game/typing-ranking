@@ -429,14 +429,11 @@ rankingbtn.onclick = async function() {
         seen.add(data.userId);
         list.push(data);
     });
-    list.sort((a, b) => b.score - a.score);
     let rank = 0;
     let prevScore = undefined;
-    let skip = 0;
     list.forEach((data, index) => {
         if (data.score !== prevScore) {
-            rank = rank + skip + 1;
-            skip = 0;
+            rank = index + 1;
         } else {
             skip++;
         }
