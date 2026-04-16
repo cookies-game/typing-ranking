@@ -4,6 +4,7 @@ body {
     min-height: 100vh;
     margin: 0;
     position: relative;
+    overflow-x: hidden;
 }
 .game-screen {
     display: flex;
@@ -45,6 +46,9 @@ body {
     filter: brightness(0.8);
     transform: scale(1.05);
 }
+.startbtn:active {
+    transform: scale(1);
+}
 .rankingbtn {
     font-weight: 500;
     font-size: 40px;
@@ -61,6 +65,29 @@ body {
 .rankingbtn:hover {
     filter: brightness(0.8);
     transform: scale(1.05);
+}
+.rankingbtn:active {
+    transform: scale(1);
+}
+.skill-shop-btn {
+    font-weight: 500;
+    font-size: 40px;
+    padding: 18px 23px;
+    background: white;
+    color: black;
+    border: 1px solid black;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    transform: scale(1);
+    font-family: "Shippori Mincho", serif;
+}
+.skill-shop-btn:hover {
+    filter: brightness(0.8);
+    transform: scale(1.05);
+}
+.skill-shop-btn:active {
+    transform: scale(1);
 }
 .typing-screen {
     position: absolute;
@@ -168,6 +195,9 @@ body {
 .setting-btn:hover {
     transform: rotate(180deg) scale(1.1);
 }
+.setting-btn:active {
+    transform: scale(1);
+}
 .setting-screen-shadow {
     position: absolute;
     inset: 0;
@@ -270,4 +300,126 @@ body {
     color: rgb(16, 0, 123);
     text-shadow: 0px 0px 20px rgb(248, 255, 57);
     white-space: nowrap;
+}
+.money-shadow {
+    position: absolute;
+    bottom: 18px;
+    left: 19px;
+    background: white;
+    border: 1.5px solid black;
+    border-radius: 7px;
+    height: 35px;
+    width: 200px;
+}
+.money-display {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    font-size: 25px;
+    color: rgb(16, 0, 123);
+}
+.skill-shop-screen {
+    position: absolute;
+    inset: 0;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    display: none;
+}
+.skill-list {
+    width: 620px;
+    max-height: 400px;
+    overflow-y: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    overflow-y: auto;
+}
+.skill-list::-webkit-scrollbar {
+    width: 4px;
+}
+.skill-list::-webkit-scrollbar-track {
+    background: white;
+    border-radius: 10px;
+}
+.skill-list::-webkit-scrollbar-thumb {
+    background: rgb(16, 0, 123);
+    border-radius: 10px;
+}
+.skill-item {
+    flex: 0 0 calc((100% - 30px) / 3);
+    height: 160px;
+    background: white;
+    border: 2px solid rgb(16, 0, 123);
+    border-radius: 20px;
+    padding: 15px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
+.skill-title {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 30px;
+}
+.money-title {
+    position: absolute;
+    top: 85px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 35px;
+}
+.shop-close {
+    position: absolute;
+    bottom: 40px;
+    font-size: 20px;
+    background: white;
+    color: black;
+    border: 1px solid black;
+    border-radius: 7px;
+    cursor: pointer;
+    padding: 10px;
+    width: 150px;
+    transition: 0.3s;
+    transform: scale(1);
+}
+.shop-close:hover {
+    transform: scale(1.15);
+}
+.shop-close:active {
+    transform: scale(1);
+}
+.buy-btn {
+    font-size: 20px;
+    border: 1px solid black;
+    border-radius: 10px;
+    transition: 0.3s;
+    transform: scale(1);
+}
+.buy-btn:hover {
+    transform: scale(1.05);
+}
+.buy-btn:active {
+    transform: scale(1);
+}
+.buy-btn.buy {
+    background: rgb(255, 162, 0);
+    color: rgb(16, 0, 123);
+    cursor: pointer;
+}
+.buy-btn.equip {
+    background: rgb(22, 104, 255);
+    color: white;
+    cursor: pointer;
+}
+.buy-btn.equipped {
+    background: rgba(0, 255, 0, 0.581);
+    color: rgba(129, 41, 41, 0.47);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+.buy-btn.equipped:hover {
+    transform: scale(1);
 }

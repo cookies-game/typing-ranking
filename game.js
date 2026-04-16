@@ -23,18 +23,45 @@ function createUserId() {
     return "user_" + Math.random().toString(36).substring(2, 10);
 }
 let userId = localStorage.getItem("userId");
-console.log("取得したID： ", userId);
 if (!userId) {
     userId = createUserId();
     localStorage.setItem("userId", userId);
-    console.log("新規ユーザー： ", userId);
-} else {
-    console.log("既存ユーザー： ", userId);
 }
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+window.onload = () => {
+    loadUserData();
+};
+const skillList = document.querySelector(".skill-list");
+async function loadUserData() {
+    const ref = doc(db, "users", userId);
+    const snap = await getDoc(ref);
+    if (snap.exists()) {
+        const data = snap.data();
+        money = data.money || 0;
+        userSkills = data.skills || {};
+        equippedSkill = data.equippedSkill || undefined;
+    } else {
+        money = 0;
+        userSkills = {};
+        equippedSkill = undefined;
+    }
+    updateMoney();
+    renderSkills();
+}
+function getMoneyMultiplier() {
+    switch (equippedSkill) {
+        case "appMoney1": return 1.1;
+        case "appMoney2": return 1.5;
+        case "appMoney3": return 2;
+        case "appMoney4": return 2.5;
+        case "appMoney5": return 10;
+        default: return 1;
+    }
+}
 const startbtn = document.querySelector(".startbtn");
 const rankingbtn = document.querySelector(".rankingbtn");
+const skillshopbtn = document.querySelector(".skill-shop-btn");
 const settingscreen = document.querySelector(".setting-screen");
 const settingbtn = document.querySelector(".setting-btn");
 const settingscreenshadow = document.querySelector(".setting-screen-shadow");
@@ -72,11 +99,24 @@ savebtn.onclick = function() {
     startbtn.style.display = "flex";
     rankingbtn.style.display = "flex";
 }
+let money = 0;
+function updateMoney() {
+    document.querySelectorAll(".money").forEach(el => {
+        el.textContent = money;
+    })
+}
+let userSkills = {};
+let equippedSkill = undefined;
 let score = 0;
 let combo = 0;
 let timer = 40;
 let timerInterval;
 let keyHandler;
+let currentword = {};
+let currentindex = 0;
+let typeroma;
+let displayscore;
+let displaycombo;
 function resetgame() {
     score = 0;
     combo = 0;
@@ -86,15 +126,149 @@ function resetgame() {
         timerInterval = undefined;
     }
 }
+const skills = [
+    {
+        id: "appMoney1",
+        name: "金運アップLv.1",
+        desc: "獲得金額が1.1倍になる",
+        price: 50000
+    },
+    {
+        id: "appMoney2",
+        name: "金運アップLv.2",
+        desc: "獲得金額が1.5倍になる",
+        price: 100000
+    },
+    {
+        id: "appMoney3",
+        name: "金運アップLv.3",
+        desc: "獲得金額が2倍になる",
+        price: 300000
+    },
+    {
+        id: "appMoney4",
+        name: "金運アップLv.4",
+        desc: "獲得金額が2.5倍になる",
+        price: 650000
+    },
+    {
+        id: "appMoney5",
+        name: "金運アップLv.5",
+        desc: "獲得金額が10倍になる",
+        price: 10000000
+    }
+];
+function renderSkills() {
+    skillList.innerHTML = "";
+    skills.forEach(skill => {
+        let btnText = "";
+        let btnClass = "";
+        if (!userSkills[skill.id]) {
+            btnText = "購入する";
+            btnClass = "buy";
+        } else if (equippedSkill === skill.id) {
+            btnText = "装備中";
+            btnClass = "equipped";
+        } else {
+            btnText = "装備";
+            btnClass = "equip";
+        }
+        const div = document.createElement("div");
+        div.className = "skill-item";
+        div.innerHTML = `
+            <div class="skill-left">
+                <div class="skill-text">
+                <div class="skill-name">${skill.name}</div>
+                <div class="skill-desc">${skill.desc}</div>
+                <div class="skill-price">${skill.price}円</div>
+                </div>
+            </div>
+            <button class="buy-btn ${btnClass}" data-id="${skill.id}">${btnText}</button>
+        `;
+        skillList.appendChild(div);
+    });
+}
+async function saveMoney() {
+    const ref = doc(db, "users", userId);
+    const snap = await getDoc(ref);
+    if (snap.exists()) {
+        await setDoc(ref, {
+            userId: userId,
+            name: userName,
+            money: money,
+            updateAt: new Date()
+        });
+    } else {
+        await setDoc(ref, {
+            userId: userId,
+            name: userName,
+            money: money,
+            createdAt: new Date()
+        });
+    }
+}
+skillList.addEventListener("click", async (e) => {
+    if (!e.target.classList.contains("buy-btn")) return;
+
+    const id = e.target.dataset.id;
+    const skill = skills.find(s => s.id === id);
+
+    // 未購入なら購入
+    if (!userSkills[id]) {
+        if (money < skill.price) {
+            alert("お金が足りません！！");
+            return;
+        }
+        
+        alert(skill.name + "を購入した！！");
+        money -= skill.price;
+        userSkills[id] = true;
+        await saveMoney();
+    }
+
+    // すでに装備中なら何もしない
+    if (equippedSkill === id) return;
+
+    // ★ここで前の装備は自動で“外れた扱い”になる
+    equippedSkill = id;
+
+    updateMoney();
+
+    await setDoc(doc(db, "users", userId), {
+        userId,
+        name: userName,
+        money,
+        skills: userSkills,
+        equippedSkill
+    });
+
+    renderSkills();
+});
+const shopscreen = document.querySelector(".skill-shop-screen");
+const shopclose = document.querySelector(".shop-close");
+skillshopbtn.onclick = function() {
+    shopscreen.style.display = "flex";
+    startbtn.style.display = "none";
+    rankingbtn.style.display = "none";
+    skillshopbtn.style.display = "none";
+    renderSkills();
+};
+shopclose.onclick = function() {
+    shopscreen.style.display = "none";
+    startbtn.style.display = "flex";
+    rankingbtn.style.display = "flex";
+    skillshopbtn.style.display = "flex";
+};
 startbtn.onclick = function() {
     resetgame();
     startbtn.style.display = "none";
     rankingbtn.style.display = "none";
+    skillshopbtn.style.display = "none";
     const typingscreen = document.querySelector(".typing-screen");
     const typeword = document.querySelector(".type-word");
-    const typeroma = document.querySelector(".type-roma");
-    const displayscore = document.querySelector(".score");
-    const displaycombo = document.querySelector(".combo");
+    typeroma = document.querySelector(".type-roma");
+    displayscore = document.querySelector(".score");
+    displaycombo = document.querySelector(".combo");
     const displaytimer = document.querySelector(".timer");
     const resultscreen = document.querySelector(".result-screen");
     const finalscore = document.querySelector(".finalscore");
@@ -137,6 +311,12 @@ startbtn.onclick = function() {
         document.removeEventListener("keydown", keyHandler);
         typingscreen.style.display = "none";
         finalscore.textContent = score;
+        const baseEarned = score
+        const multiplier = getMoneyMultiplier();
+        const earned = Math.floor(baseEarned * multiplier + combo);
+        money += earned;
+        updateMoney();
+        await saveMoney();
         await saveScore();
         resultscreen.style.display = "flex";
     }
@@ -146,6 +326,7 @@ startbtn.onclick = function() {
         resultscreen.style.display = "none";
         startbtn.style.display = "flex";
         rankingbtn.style.display = "flex";
+        skillshopbtn.style.display = "flex";
         document.removeEventListener("keydown", keyHandler);
         timer = 40;
         score = 0;
@@ -177,13 +358,25 @@ startbtn.onclick = function() {
         { kana: "アソパソマソ", roma: "asopasomaso" },
         { kana: "バイキソマソ", roma: "baikisomaso" }
     ];
-    let currentword = {};
-    let currentindex = 0;
     setNewWord();
     function setNewWord() {
+        const typeword = document.querySelector(".type-word");
+        const typeromaEl = document.querySelector(".type-roma");
+        if (!typeword || !typeromaEl) {
+            return;
+        }
+
         currentword = wordlist[Math.floor(Math.random() * wordlist.length)];
+
         typeword.textContent = currentword.kana;
-        typeroma.innerHTML = currentword.roma.split("").map(c => `<span>${c}</span>`).join("");
+
+        typeromaEl.innerHTML = currentword.roma
+            .split("")
+            .map(c => `<span>${c}</span>`)
+            .join("");
+
+        typeroma = typeromaEl; // ←これ重要（グローバル更新）
+
         currentindex = 0;
     }
     keyHandler = function(e) {
@@ -220,6 +413,7 @@ rankingbtn.onclick = async function() {
     rankingscreen.style.display = "flex";
     startbtn.style.display = "none";
     rankingbtn.style.display = "none";
+    skillshopbtn.style.display = "none";
     const q = query(
         collection(db, "scores", today, "users"),
         orderBy("score", "desc"),
@@ -266,6 +460,7 @@ closebtn2.onclick = function() {
     rankingscreen.style.display = "none";
     startbtn.style.display = "flex";
     rankingbtn.style.display = "flex";
+    skillshopbtn.style.display = "flex";
 };
 const countdown = document.querySelector(".countdown");
 function updateCountdown() {
