@@ -110,13 +110,26 @@ let equippedSkill = undefined;
 let score = 0;
 let combo = 0;
 let timer = 40;
-let timerInterval;
-let keyHandler;
 let currentword = {};
 let currentindex = 0;
 let typeroma;
 let displayscore;
 let displaycombo;
+let resultShown = false;
+let gameRunning = false;
+let timerInterval = undefined;
+let keyHandler = undefined;
+function stopGame() {
+    gameRunning = false;
+    if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = undefined;
+    }
+    if (keyHandler) {
+        document.removeEventListener("keydown", keyHandler);
+        keyHandler = undefined;
+    }
+}
 function resetgame() {
     score = 0;
     combo = 0;
@@ -209,12 +222,29 @@ async function saveMoney() {
         });
     }
 }
+homebtn.onclick = function() {
+    stopGame();
+    resetgame();
+    const typingscreen = document.querySelector(".typing-screen");
+    const resultscreen = document.querySelector(".result-screen");
+    typingscreen.style.display = "none";
+    resultscreen.style.display = "none";
+    startbtn.style.display = "flex";
+    rankingbtn.style.display = "flex";
+    skillshopbtn.style.display = "flex";
+    timer = 40;
+    score = 0;
+    combo = 0;
+    displaytimer.textContent = "残り時間： 40秒";
+    displayscore.textContent = "スコア： 0";
+    displaycombo.textContent = "コンボ： 0";
+}
 skillList.addEventListener("click", async (e) => {
     if (!e.target.classList.contains("buy-btn")) return;
-
+    
     const id = e.target.dataset.id;
     const skill = skills.find(s => s.id === id);
-
+    
     // 未購入なら購入
     if (!userSkills[id]) {
         if (money < skill.price) {
@@ -262,6 +292,9 @@ shopclose.onclick = function() {
     skillshopbtn.style.display = "flex";
 };
 startbtn.onclick = function() {
+    stopGame();
+    resultShown = false;
+    gameRunning = true;
     resetgame();
     startbtn.style.display = "none";
     rankingbtn.style.display = "none";
@@ -277,14 +310,13 @@ startbtn.onclick = function() {
     const homebtn = document.querySelector(".home-btn");
     typingscreen.style.display = "flex";
     timerInterval = setInterval(() => {
+        if (!gameRunning) return;
         timer--;
         displaytimer.textContent = "残り時間： " + timer + "秒";
         if (timer <= 0) {
             clearInterval(timerInterval);
-            showResult();
-            startbtn.style.display = "none";
-            rankingbtn.style.display = "none";
-            resultscreen.style.display = "flex";
+            timerInterval = undefined;
+            if (gameRunning) showResult();
         }
     }, 1000);
     async function saveScore() {
@@ -310,6 +342,9 @@ startbtn.onclick = function() {
         }
     }
     async function showResult() {
+        if (resultShown) return;
+        resultShown = true;
+        gameRunning = false;
         document.removeEventListener("keydown", keyHandler);
         typingscreen.style.display = "none";
         finalscore.textContent = score;
@@ -321,21 +356,6 @@ startbtn.onclick = function() {
         await saveMoney();
         await saveScore();
         resultscreen.style.display = "flex";
-    }
-    homebtn.onclick = function() {
-        resetgame();
-        typingscreen.style.display = "none";
-        resultscreen.style.display = "none";
-        startbtn.style.display = "flex";
-        rankingbtn.style.display = "flex";
-        skillshopbtn.style.display = "flex";
-        document.removeEventListener("keydown", keyHandler);
-        timer = 40;
-        score = 0;
-        combo = 0;
-        displaytimer.textContent = "残り時間： 40秒";
-        displayscore.textContent = "スコア： 0";
-        displaycombo.textContent = "コンボ： 0";
     }
     const wordlist = [
         { kana: "情報通信技術", roma: "jouhoutuusinngijutu" },
@@ -382,6 +402,7 @@ startbtn.onclick = function() {
         currentindex = 0;
     }
     keyHandler = function(e) {
+        if (!gameRunning) return;
         const key = e.key.toLowerCase();
         if (key.length !== 1)return;
         if (key === currentword.roma[currentindex]) {
@@ -436,8 +457,6 @@ rankingbtn.onclick = async function() {
     list.forEach((data, index) => {
         if (data.score !== prevScore) {
             rank = index + 1;
-        } else {
-            skip++;
         }
         let icon = "";
         if (rank === 1) {
