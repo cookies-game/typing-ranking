@@ -276,7 +276,6 @@ function renderSkills() {
 }
 skillList.addEventListener("click", async (e) => {
     if (!e.target.classList.contains("buy-btn")) return;
-    
     const id = e.target.dataset.id;
     const skill = skills.find(s => s.id === id);
     
@@ -319,6 +318,26 @@ skillshopbtn.onclick = function() {
     rankingbtn.style.display = "none";
     skillshopbtn.style.display = "none";
     renderSkills();
+    updateMoney();
+};
+const skillremovebtn = document.querySelector(".skill-remove-btn");
+skillremovebtn.onclick = async function () {
+    if (!equippedSkill) {
+        alert("装備中のスキルがありません！");
+        return;
+    }
+    alert("スキルを外しました！");
+    equippedSkill = null;
+    const ref = doc(db, "users", userId);
+    await setDoc(ref, {
+        userId: userId,
+        name: userName,
+        money: money,
+        skills: userSkills,
+        equippedSkill
+    });
+    renderSkills();
+    updateMoney();
 };
 shopclose.onclick = function() {
         shopscreen.style.display = "none";

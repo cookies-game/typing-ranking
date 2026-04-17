@@ -378,6 +378,27 @@ body {
     transform: translateX(-50%);
     font-size: 35px;
 }
+.skill-remove-btn {
+    position: absolute;
+    bottom: 110px;
+    font-size: 20px;
+    background: white;
+    color: black;
+    border: 1px solid black;
+    border-radius: 7px;
+    cursor: pointer;
+    padding: 10px;
+    width: 220px;
+    white-space: nowrap;
+    transition: 0.3s;
+    transform: scale(1);
+}
+.skill-remove-btn:hover {
+    transform: scale(1.05);
+}
+.skill-remove-btn:active {
+    transform: scale(1);
+}
 .shop-close {
     position: absolute;
     bottom: 40px;
