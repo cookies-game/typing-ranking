@@ -123,7 +123,10 @@ let money = 0;
 function updateMoney() {
     document.querySelectorAll(".money").forEach(el => {
         el.textContent = money;
-    })
+    });
+    const moneyshadow = document.querySelector(".money-shadow");
+    const moneydisplay = document.querySelector(".money-display");
+    moneyshadow.style.width = moneydisplay.offsetWidth + "px";
 }
 let userSkills = {};
 let equippedSkill = undefined;

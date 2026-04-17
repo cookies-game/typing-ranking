@@ -301,22 +301,29 @@ body {
     text-shadow: 0px 0px 20px rgb(248, 255, 57);
     white-space: nowrap;
 }
-.money-shadow {
-    position: absolute;
-    bottom: 18px;
-    left: 19px;
-    background: white;
-    border: 1.5px solid black;
-    border-radius: 7px;
-    height: 35px;
-    width: 200px;
-}
 .money-display {
     position: absolute;
     bottom: 20px;
     left: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0px;
     font-size: 25px;
     color: rgb(16, 0, 123);
+}
+.money-shadow {
+    position: absolute;
+    bottom: 18px;
+    left: 21.5px;
+    display: inline-flex;
+    align-items: center;
+    background: white;
+    border: 1.5px solid black;
+    border-radius: 7px;
+    padding: 5px 12px;
+    width: fit-content;
+    height: 37px;
+    box-sizing: border-box;
 }
 .skill-shop-screen {
     position: absolute;
