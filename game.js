@@ -189,46 +189,47 @@ function renderSkills() {
         const div = document.createElement("div");
         div.className = "skill-item";
         div.innerHTML = `
-            <div class="skill-left">
+        <div class="skill-left">
                 <div class="skill-text">
                 <div class="skill-name">${skill.name}</div>
                 <div class="skill-desc">${skill.desc}</div>
                 <div class="skill-price">${skill.price}円</div>
                 </div>
-            </div>
-            <button class="buy-btn ${btnClass}" data-id="${skill.id}">${btnText}</button>
-        `;
-        skillList.appendChild(div);
-    });
-}
-async function saveMoney() {
-    const ref = doc(db, "users", userId);
-    const snap = await getDoc(ref);
-    if (snap.exists()) {
-        await setDoc(ref, {
-            userId: userId,
-            name: userName,
-            money: money,
-            skills: userSkills,
-            equippedSkill: equippedSkill,
-            updateAt: new Date()
-        });
-    } else {
-        await setDoc(ref, {
-            userId: userId,
-            name: userName,
-            money: money,
-            createdAt: new Date()
-        });
-    }
-}
-homebtn.onclick = function() {
-    stopGame();
-    resetgame();
-    const typingscreen = document.querySelector(".typing-screen");
-    const resultscreen = document.querySelector(".result-screen");
-    typingscreen.style.display = "none";
-    resultscreen.style.display = "none";
+                </div>
+                <button class="buy-btn ${btnClass}" data-id="${skill.id}">${btnText}</button>
+                `;
+                skillList.appendChild(div);
+            });
+        }
+        async function saveMoney() {
+            const ref = doc(db, "users", userId);
+            const snap = await getDoc(ref);
+            if (snap.exists()) {
+                await setDoc(ref, {
+                    userId: userId,
+                    name: userName,
+                    money: money,
+                    skills: userSkills,
+                    equippedSkill: equippedSkill,
+                    updateAt: new Date()
+                });
+            } else {
+                await setDoc(ref, {
+                    userId: userId,
+                    name: userName,
+                    money: money,
+                    createdAt: new Date()
+                });
+            }
+        }
+        const homebtn = document.querySelector(".home-btn");
+        homebtn.onclick = function() {
+            stopGame();
+            resetgame();
+            const typingscreen = document.querySelector(".typing-screen");
+            const resultscreen = document.querySelector(".result-screen");
+            typingscreen.style.display = "none";
+            resultscreen.style.display = "none";
     startbtn.style.display = "flex";
     rankingbtn.style.display = "flex";
     skillshopbtn.style.display = "flex";
@@ -307,7 +308,6 @@ startbtn.onclick = function() {
     const displaytimer = document.querySelector(".timer");
     const resultscreen = document.querySelector(".result-screen");
     const finalscore = document.querySelector(".finalscore");
-    const homebtn = document.querySelector(".home-btn");
     typingscreen.style.display = "flex";
     timerInterval = setInterval(() => {
         if (!gameRunning) return;
@@ -353,9 +353,9 @@ startbtn.onclick = function() {
         const earned = Math.floor(baseEarned * multiplier + combo);
         money += earned;
         updateMoney();
+        resultscreen.style.display = "flex";
         await saveMoney();
         await saveScore();
-        resultscreen.style.display = "flex";
     }
     const wordlist = [
         { kana: "情報通信技術", roma: "jouhoutuusinngijutu" },
