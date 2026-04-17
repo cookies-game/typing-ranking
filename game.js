@@ -69,16 +69,24 @@ const now = new Date();
 const today = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 settingbtn.onclick = function() {
     settingscreen.style.display = "flex";
+    settingscreenshadow.style.display = "flex";
     startbtn.style.display = "none";
     rankingbtn.style.display = "none";
-    settingscreenshadow.style.display = "flex";
+    skillshopbtn.style.display = "none";
 }
 const closebtn = document.querySelector(".close-btn");
 closebtn.onclick = function() {
-    settingscreen.style.display = "none";
-    startbtn.style.display = "flex";
-    rankingbtn.style.display = "flex";
-    settingscreenshadow.style.display = "none";
+    const name = nameinput.value.trim();
+    if (name === "") {
+        alert("名前を入力してください");
+        return;
+    } else {
+        settingscreen.style.display = "none";
+        settingscreenshadow.style.display = "none";
+        startbtn.style.display = "flex";
+        rankingbtn.style.display = "flex";
+        skillshopbtn.style.display = "flex";
+    }
 }
 const nameinput = document.querySelector(".name-input");
 const savebtn = document.querySelector(".save-btn");
@@ -92,13 +100,25 @@ savebtn.onclick = function() {
         alert("名前を入力してください");
         return;
     }
-    userName = nameinput.value;
-    localStorage.setItem("userName", userName);
-    settingscreen.style.display = "none";
-    settingscreenshadow.style.display = "none";
-    startbtn.style.display = "flex";
-    rankingbtn.style.display = "flex";
-}
+    const newName = nameinput.value.trim();
+    const oldName = localStorage.getItem("userName");
+    if (newName === oldName) {
+        settingscreen.style.display = "none";
+        settingscreenshadow.style.display = "none";
+        startbtn.style.display = "flex";
+        rankingbtn.style.display = "flex";
+        skillshopbtn.style.display = "flex";
+    } else {
+        userName = newName;
+        alert("名前を保存しました");
+        localStorage.setItem("userName", userName);
+        settingscreen.style.display = "none";
+        settingscreenshadow.style.display = "none";
+        startbtn.style.display = "flex";
+        rankingbtn.style.display = "flex";
+        skillshopbtn.style.display = "flex";
+    }
+};
 let money = 0;
 function updateMoney() {
     document.querySelectorAll(".money").forEach(el => {
@@ -287,10 +307,10 @@ skillshopbtn.onclick = function() {
     renderSkills();
 };
 shopclose.onclick = function() {
-    shopscreen.style.display = "none";
-    startbtn.style.display = "flex";
-    rankingbtn.style.display = "flex";
-    skillshopbtn.style.display = "flex";
+        shopscreen.style.display = "none";
+        startbtn.style.display = "flex";
+        rankingbtn.style.display = "flex";
+        skillshopbtn.style.display = "flex";
 };
 startbtn.onclick = function() {
     stopGame();
