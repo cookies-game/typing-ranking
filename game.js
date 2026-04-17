@@ -137,6 +137,7 @@ let displayscore;
 let displaycombo;
 let resultShown = false;
 let gameRunning = false;
+let comboSaveUsed = false;
 let timerInterval = undefined;
 let keyHandler = undefined;
 function stopGame() {
@@ -154,6 +155,7 @@ function resetgame() {
     score = 0;
     combo = 0;
     timer = 40;
+    comboSaveUsed = false;
     if (timerInterval) {
         clearInterval(timerInterval);
         timerInterval = undefined;
@@ -189,8 +191,17 @@ const skills = [
         name: "金運アップLv.5",
         desc: "獲得金額が10倍になる",
         price: 10000000
+    },
+    {
+        id: "comboSave",
+        name: "ほけんの窓口",
+        desc: "1度だけミスをしてもコンボが途切れない",
+        price: 700000
     }
 ];
+function hasComboSaveSkill() {
+    return equippedSkill === "comboSave";
+}
 function renderSkills() {
     skillList.innerHTML = "";
     skills.forEach(skill => {
@@ -443,8 +454,13 @@ startbtn.onclick = function() {
                 setNewWord();
             }
         } else {
-            combo = 0;
-            displaycombo.textContent = `コンボ： ${combo}`;
+            if (hasComboSaveSkill() && !comboSaveUsed && combo > 0) {
+                comboSaveUsed = true;
+                displaycombo.textContent = `コンボ： ${combo}`;
+            } else {
+                combo = 0;
+                displaycombo.textContent = `コンボ： ${combo}`;
+            }
         }
     };
     document.addEventListener("keydown", keyHandler);
