@@ -162,8 +162,10 @@ function updateAutoSkillDisplay() {
     if (!isAutoTypeSkill()) {
         autoSkillnameEl.textContent = "";
         autoSkilltimeEl.textContent = "";
+        autoSkillbtn.style.display = "none";
         return;
     }
+    autoSkillbtn.style.display = "flex";
     const skill = skills.find(s => s.id === equippedSkill);
     if (!skill) return;
     if (autoSkillActive) {
@@ -206,7 +208,8 @@ function isAutoTypeSkill() {
         "autoType3",
         "autoType4",
         "autoType5",
-        "autoType6"
+        "autoType6",
+        "autoType7"
     ].includes(equippedSkill);
 };
 function getAutoTypeSkillData() {
@@ -246,6 +249,12 @@ function getAutoTypeSkillData() {
                 duration: 8000,
                 interval: 55,
                 cooldown: 20000
+            };
+        case "autoType7":
+            return {
+                duration: 1000000,
+                interval: 0,
+                cooldown: 0
             };
         default:
             return null;
@@ -413,9 +422,15 @@ const skills = [
     },
     {
         id: "autoType6",
-        name: "自動入力χ",
+        name: "自動入力ψ",
         desc: "スペースキーで発動　8秒間 0.055秒間隔で自動入力する CT:20秒",
         price: 10000000
+    },
+    {
+        id: "autoType7",
+        name: "自動入力χ",
+        desc: "スペースキーで発動　1000秒間 0秒間隔で自動入力する CT:0秒",
+        price: 0
     }
 ];
 function hasComboSaveSkill() {
@@ -424,6 +439,9 @@ function hasComboSaveSkill() {
 function renderSkills() {
     skillList.innerHTML = "";
     skills.forEach(skill => {
+        if (skill.id === "autoType7" && !userSkills["autoType7"]) {
+            return;
+        }
         let btnText = "";
         let btnClass = "";
         if (!userSkills[skill.id]) {
@@ -468,6 +486,8 @@ function renderSkills() {
                     userId: userId,
                     name: userName,
                     money: money,
+                    skills: userSkills,
+                    equippedSkill: equippedSkill,
                     createdAt: new Date()
                 });
             }
@@ -560,7 +580,59 @@ shopclose.onclick = function() {
         startbtn.style.display = "flex";
         rankingbtn.style.display = "flex";
         skillshopbtn.style.display = "flex";
-};
+    };
+const keys = {};
+document.addEventListener("keydown", async (e) => {
+    keys[e.key.toLowerCase()] = true;
+    if (keys["shift"] && keys["s"] && keys["p"]) {
+        const input = prompt("Please enter the cheat pass");
+        if (input === null) {
+            keys["shift"] = false;
+            keys["s"] = false;
+            keys["p"] = false;
+            return;
+        }
+        if (input === "AFχ") {
+            if (userSkills["autoType7"]) {
+                alert("入手済みです！");
+                keys["shift"] = false;
+                keys["s"] = false;
+                keys["p"] = false;
+                return;
+            }
+            alert("自動入力χをゲットした！！");
+            userSkills["autoType7"] = true;
+            equippedSkill = "autoType7";
+            await setDoc(doc(db, "users", userId), {
+                userId: userId,
+                name: userName,
+                money: money,
+                skills: userSkills,
+                equippedSkill: equippedSkill
+            });
+            if (!skills.find(s => s.id === "autoType7")) {
+                skills.push({
+                    id: "autoType7",
+                    name: "自動入力χ",
+                    desc: "1000秒間 0秒間隔で自動入力する CT:0秒",
+                    price: 0
+                });
+            }
+            renderSkills();
+            keys["shift"] = false;
+            keys["s"] = false;
+            keys["p"] = false;
+        } else {
+            alert("path not found");
+            keys["shift"] = false;
+            keys["s"] = false;
+            keys["p"] = false;
+        }
+    }
+});
+document.addEventListener("keyup", (e) => {
+    keys[e.key.toLowerCase()] = false;
+});
 startbtn.onclick = function() {
     stopGame();
     resultShown = false;
