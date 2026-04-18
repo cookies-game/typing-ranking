@@ -44,7 +44,7 @@ async function loadUserData() {
     } else {
         money = 0;
         userSkills = {};
-        equippedSkill = undefined;
+        equippedSkill = null
     }
     updateMoney();
     renderSkills();
@@ -129,7 +129,12 @@ function updateMoney() {
     moneyshadow.style.width = moneydisplay.offsetWidth + "px";
 }
 let userSkills = {};
-let equippedSkill = undefined;
+let equippedSkill = null
+let autoSkillActive = false;
+let autoSkillCooldown = false;
+let autoSkillCooldownTimer = undefined;
+let autoSkillDurationTimer = undefined;
+let autoTypeInterval = undefined;
 let score = 0;
 let combo = 0;
 let timer = 40;
@@ -138,13 +143,43 @@ let currentindex = 0;
 let typeroma;
 let displayscore;
 let displaycombo;
+let displaytimer;
+let autoSkillRemain = 0;
+let autoSkillCooldownRemain = 0;
+let autoSkillDisplayTimer = undefined;
 let resultShown = false;
 let gameRunning = false;
 let comboSaveUsed = false;
 let timerInterval = undefined;
 let keyHandler = undefined;
+const autoSkillbtn = document.querySelector(".auto-skill-btn");
+const autoSkillnameEl = document.querySelector(".auto-skill-name");
+const autoSkilltimeEl = document.querySelector(".auto-skill-time");
+autoSkillbtn.addEventListener("pointerdown", () => {
+    startAutoTypeSkill();
+});
+function updateAutoSkillDisplay() {
+    if (!isAutoTypeSkill()) {
+        autoSkillnameEl.textContent = "";
+        autoSkilltimeEl.textContent = "";
+        return;
+    }
+    const skill = skills.find(s => s.id === equippedSkill);
+    if (!skill) return;
+    if (autoSkillActive) {
+        autoSkillnameEl.textContent = skill.name;
+        autoSkilltimeEl.textContent = `終了まで${Math.ceil(autoSkillRemain / 1000)}s`;
+    } else if (autoSkillCooldown) {
+        autoSkillnameEl.textContent = skill.name;
+        autoSkilltimeEl.textContent = `再度使えるまで${Math.ceil(autoSkillCooldownRemain / 1000)}s`;
+    } else {
+        autoSkillnameEl.textContent = skill.name;
+        autoSkilltimeEl.textContent = "";
+    }
+}
 function stopGame() {
     gameRunning = false;
+    stopAutoTypeSkill();
     if (timerInterval) {
         clearInterval(timerInterval);
         timerInterval = undefined;
@@ -163,6 +198,151 @@ function resetgame() {
         clearInterval(timerInterval);
         timerInterval = undefined;
     }
+}
+function isAutoTypeSkill() {
+    return [
+        "autoType1",
+        "autoType2",
+        "autoType3",
+        "autoType4",
+        "autoType5",
+        "autoType6"
+    ].includes(equippedSkill);
+};
+function getAutoTypeSkillData() {
+    switch (equippedSkill) {
+        case "autoType1":
+            return {
+                duration: 3000,
+                interval: 90,
+                cooldown: 45000
+            };
+        case "autoType2":
+            return {
+                duration: 5000,
+                interval: 90,
+                cooldown: 45000
+            };
+        case "autoType3":
+            return {
+                duration: 5000,
+                interval: 90,
+                cooldown: 40000
+            };
+        case "autoType4":
+            return {
+                duration: 6000,
+                interval: 75,
+                cooldown: 35000
+            };
+        case "autoType5":
+            return {
+                duration: 7000,
+                interval: 70,
+                cooldown: 30000
+            };
+        case "autoType6":
+            return {
+                duration: 8000,
+                interval: 55,
+                cooldown: 20000
+            };
+        default:
+            return null;
+    }
+}
+function startAutoTypeSkill() {
+    const data = getAutoTypeSkillData();
+    if (!data) return;
+    if (autoSkillActive) return;
+    if (autoSkillCooldown) return;
+    if (!gameRunning) return;
+    autoSkillActive = true;
+    autoSkillCooldown = true;
+    autoSkillRemain = data.duration;
+    autoSkillCooldownRemain = data.cooldown;
+    updateAutoSkillDisplay();
+    if (autoSkillDisplayTimer) {
+        clearInterval(autoSkillDisplayTimer);
+    }
+    autoSkillDisplayTimer = setInterval(() => {
+        if (autoSkillActive) {
+            autoSkillRemain -= 100;
+            if (autoSkillRemain <= 0) {
+                autoSkillRemain = 0;
+                autoSkillActive = false;
+            }
+        }
+        if (autoSkillCooldown) {
+            autoSkillCooldownRemain -= 100;
+            if (autoSkillCooldownRemain <= 0) {
+                autoSkillCooldownRemain = 0;
+                autoSkillCooldown = false;
+            }
+        }
+        updateAutoSkillDisplay();
+        if (!autoSkillActive && !autoSkillCooldown) {
+            clearInterval(autoSkillDisplayTimer);
+            autoSkillDisplayTimer = undefined;
+            updateAutoSkillDisplay();
+        }
+    }, 100);
+    if (autoTypeInterval) {
+        clearInterval(autoTypeInterval);
+        autoTypeInterval = undefined;
+    }
+    autoTypeInterval = setInterval(() => {
+        if (!gameRunning) {
+            stopAutoTypeSkill();
+            return;
+        }
+        if (!currentword.roma) return;
+        const nextChar = currentword.roma[currentindex];
+        if (!nextChar) return;
+        const event = new KeyboardEvent("keydown", {
+            key: nextChar,
+            bubbles: true,
+            cancelable: true
+        });
+        document.dispatchEvent(event);
+        if (currentindex >= currentword.roma.length) {
+            setNewWord();
+            return;
+        }
+    }, data.interval);
+    autoSkillDurationTimer = setTimeout(() => {
+        if (autoTypeInterval) {
+            clearInterval(autoTypeInterval);
+            autoTypeInterval = undefined;
+        }
+        autoSkillActive = false;
+    }, data.duration);
+    autoSkillCooldownTimer = setTimeout(() => {
+        autoSkillCooldown = false;
+    }, data.cooldown);
+}
+function stopAutoTypeSkill() {
+    autoSkillActive = false;
+    autoSkillCooldown = false;
+    autoSkillRemain = 0;
+    autoSkillCooldownRemain = 0;
+    if (autoTypeInterval) {
+        clearInterval(autoTypeInterval);
+        autoTypeInterval = undefined;
+    }
+    if (autoSkillDurationTimer) {
+        clearTimeout(autoSkillDurationTimer);
+        autoSkillDurationTimer = undefined;
+    }
+    if (autoSkillCooldownTimer) {
+        clearTimeout(autoSkillCooldownTimer);
+        autoSkillCooldownTimer = undefined;
+    }
+    if (autoSkillDisplayTimer) {
+        clearInterval(autoSkillDisplayTimer);
+        autoSkillDisplayTimer = undefined;
+    }
+    updateAutoSkillDisplay();
 }
 const skills = [
     {
@@ -200,6 +380,42 @@ const skills = [
         name: "ほけんの窓口",
         desc: "1度だけミスをしてもコンボが途切れない",
         price: 700000
+    },
+    {
+        id: "autoType1",
+        name: "自動入力(無印)",
+        desc: "スペースキーで発動　3秒間 0.09秒間隔で自動入力する CT:45秒",
+        price: 100000
+    },
+    {
+        id: "autoType2",
+        name: "自動入力＋",
+        desc: "スペースキーで発動　5秒間 0.09秒間隔で自動入力する CT:45秒",
+        price: 350000
+    },
+    {
+        id: "autoType3",
+        name: "自動入力ζ",
+        desc: "スペースキーで発動　5秒間 0.09秒間隔で自動入力する CT:40秒",
+        price: 450000
+    },
+    {
+        id: "autoType4",
+        name: "自動入力θ",
+        desc: "スペースキーで発動　6秒間 0.075秒間隔で自動入力する CT:35秒",
+        price: 700000
+    },
+    {
+        id: "autoType5",
+        name: "自動入力λ",
+        desc: "スペースキーで発動　7秒間 0.07秒間隔で自動入力する CT:30秒",
+        price: 1000000
+    },
+    {
+        id: "autoType6",
+        name: "自動入力χ",
+        desc: "スペースキーで発動　8秒間 0.055秒間隔で自動入力する CT:20秒",
+        price: 10000000
     }
 ];
 function hasComboSaveSkill() {
@@ -358,7 +574,7 @@ startbtn.onclick = function() {
     typeroma = document.querySelector(".type-roma");
     displayscore = document.querySelector(".score");
     displaycombo = document.querySelector(".combo");
-    const displaytimer = document.querySelector(".timer");
+    displaytimer = document.querySelector(".timer");
     const resultscreen = document.querySelector(".result-screen");
     const finalscore = document.querySelector(".finalscore");
     typingscreen.style.display = "flex";
@@ -456,6 +672,11 @@ startbtn.onclick = function() {
     }
     keyHandler = function(e) {
         if (!gameRunning) return;
+        if (e.code === "Space") {
+            e.preventDefault();
+            startAutoTypeSkill();
+            return;
+        }
         const key = e.key.toLowerCase();
         if (key.length !== 1)return;
         if (key === currentword.roma[currentindex]) {
@@ -474,6 +695,7 @@ startbtn.onclick = function() {
             displaycombo.textContent = `コンボ： ${combo}`;
             if (currentindex >= currentword.roma.length) {
                 setNewWord();
+                return;
             }
         } else {
             if (hasComboSaveSkill() && !comboSaveUsed && combo > 0) {

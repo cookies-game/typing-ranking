@@ -136,6 +136,41 @@ body {
     font-size: 35px;
     color: rgb(16, 0, 123);
 }
+.auto-skill-ui {
+    position: absolute;
+    bottom: 50px;
+    right: 50px;
+}
+.auto-skill-btn {
+    width: 120px;
+    height: 120px;
+    padding: 12px 16px;
+    border: 2px solid white;
+    border-radius: 50%;
+    background: rgb(46, 46, 46);
+    color: white;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: flex-start;
+    box-sizing: border-box;
+    text-align: center;
+    transition: 0.3s;
+    transform: scale(1);
+}
+.auto-skill-btn:hover {
+    transform: scale(1.1);
+}
+.auto-skill-btn:active {
+    transform: scale(1);
+}
+.auto-skill-name {
+    font-size: 12px;
+}
+.auto-skill-time {
+    font-size: 15px;
+}
 .result-screen {
     display: none;
     position: absolute;
@@ -345,6 +380,9 @@ body {
 .skill-list::-webkit-scrollbar {
     width: 4px;
 }
+.skill-list::-webkit-scrollbar-thumb:hover {
+    background: rgb(81, 69, 159);
+}
 .skill-list::-webkit-scrollbar-track {
     background: white;
     border-radius: 10px;
@@ -380,7 +418,7 @@ body {
 }
 .skill-remove-btn {
     position: absolute;
-    bottom: 110px;
+    bottom: 85px;
     font-size: 20px;
     background: white;
     color: black;
@@ -401,7 +439,7 @@ body {
 }
 .shop-close {
     position: absolute;
-    bottom: 40px;
+    bottom: 20px;
     font-size: 20px;
     background: white;
     color: black;
@@ -443,10 +481,9 @@ body {
     cursor: pointer;
 }
 .buy-btn.equipped {
-    background: rgba(0, 255, 0, 0.581);
-    color: rgba(129, 41, 41, 0.47);
+    background: rgb(22, 176, 22);
+    color: rgb(109, 46, 46);
     cursor: not-allowed;
-    opacity: 0.6;
 }
 .buy-btn.equipped:hover {
     transform: scale(1);
