@@ -391,45 +391,63 @@ const skills = [
         price: 700000
     },
     {
+        id: "comboboost1",
+        name: "コンボブーストLv.1",
+        desc: "コンボ倍率が1.17倍になる<br>ミス時スコア-500",
+        price: 20000
+    },
+    {
+        id: "comboboost2",
+        name: "コンボブーストLv.2",
+        desc: "コンボ倍率が2倍になる<br>ミス時スコア-1000",
+        price: 70000
+    },
+    {
+        id: "comboboost3",
+        name: "コンボブーストLv.3",
+        desc: "コンボ倍率が3倍になる<br>ミス時スコア-10000",
+        price: 500000
+    },
+    {
         id: "autoType1",
         name: "自動入力(無印)",
-        desc: "スペースキーで発動　3秒間 0.09秒間隔で自動入力する CT:45秒",
+        desc: "スペースキーで発動<br>3秒間 0.09秒間隔で<br>自動入力する CT:45秒",
         price: 100000
     },
     {
         id: "autoType2",
         name: "自動入力＋",
-        desc: "スペースキーで発動　5秒間 0.09秒間隔で自動入力する CT:45秒",
+        desc: "スペースキーで発動<br>5秒間 0.09秒間隔で<br>自動入力する CT:45秒",
         price: 350000
     },
     {
         id: "autoType3",
         name: "自動入力ζ",
-        desc: "スペースキーで発動　5秒間 0.09秒間隔で自動入力する CT:40秒",
+        desc: "スペースキーで発動<br>5秒間 0.09秒間隔で<br>自動入力する CT:40秒",
         price: 450000
     },
     {
         id: "autoType4",
         name: "自動入力θ",
-        desc: "スペースキーで発動　6秒間 0.075秒間隔で自動入力する CT:35秒",
+        desc: "スペースキーで発動<br>6秒間 0.075秒間隔で自動入力する CT:35秒",
         price: 700000
     },
     {
         id: "autoType5",
         name: "自動入力λ",
-        desc: "スペースキーで発動　7秒間 0.07秒間隔で自動入力する CT:30秒",
+        desc: "スペースキーで発動<br>7秒間 0.07秒間隔で<br>自動入力する CT:30秒",
         price: 1000000
     },
     {
         id: "autoType6",
         name: "自動入力ψ",
-        desc: "スペースキーで発動　8秒間 0.055秒間隔で自動入力する CT:20秒",
+        desc: "スペースキーで発動<br>8秒間 0.055秒間隔で自動入力する CT:20秒",
         price: 10000000
     },
     {
         id: "autoType7",
         name: "自動入力χ",
-        desc: "スペースキーで発動　1000秒間 0秒間隔で自動入力する CT:0秒",
+        desc: "スペースキーで発動<br>1000秒間 0秒間隔で<br>自動入力する CT:0秒",
         price: 0
     }
 ];
@@ -759,8 +777,17 @@ startbtn.onclick = function() {
             currentindex++;
             combo++;
             const basescore = 100;
-            let multiplier;
-            multiplier = 1 + (combo * 0.15);
+            let comboMultiplier = 1 + (combo * 0.15);
+            if (equippedSkill === "comboboost1") {
+                comboMultiplier = 1 + (combo * 0.17);
+            }
+            if (equippedSkill === "comboboost2") {
+                comboMultiplier = 1 + (combo * 1);
+            }
+            if (equippedSkill === "comboboost3") {
+                comboMultiplier = 1 + (combo * 2);
+            }
+            const multiplier = comboMultiplier;
             const thisscore = Math.floor(basescore * multiplier);
             score += thisscore;
             displayscore.textContent = `スコア： ${score}`;
@@ -776,8 +803,15 @@ startbtn.onclick = function() {
             } else {
                 combo = 0;
                 displaycombo.textContent = `コンボ： ${combo}`;
+                let missPenalty = 0;
+                if (equippedSkill === "comboboost1") missPenalty = 500;
+                if (equippedSkill === "comboboost2") missPenalty = 1000;
+                if (equippedSkill === "comboboost3") missPenalty = 10000;
+                score -= missPenalty;
+                if (score < 0) score = 0;
             }
         }
+        displayscore.textContent = `スコア： ${score}`;
     };
     document.addEventListener("keydown", keyHandler);
 };
