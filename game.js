@@ -66,8 +66,8 @@ const settingscreen = document.querySelector(".setting-screen");
 const settingbtn = document.querySelector(".setting-btn");
 const settingscreenshadow = document.querySelector(".setting-screen-shadow");
 const now = new Date();
-const today = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
-settingbtn.onclick = function() {
+const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+settingbtn.onclick = function () {
     settingscreen.style.display = "flex";
     settingscreenshadow.style.display = "flex";
     startbtn.style.display = "none";
@@ -75,7 +75,7 @@ settingbtn.onclick = function() {
     skillshopbtn.style.display = "none";
 }
 const closebtn = document.querySelector(".close-btn");
-closebtn.onclick = function() {
+closebtn.onclick = function () {
     const name = nameinput.value.trim();
     if (name === "") {
         alert("名前を入力してください");
@@ -95,7 +95,7 @@ if (!userName) {
     userName = "noob";
 }
 nameinput.value = userName;
-savebtn.onclick = function() {
+savebtn.onclick = function () {
     if (nameinput.value.trim() === "") {
         alert("名前を入力してください");
         return;
@@ -152,6 +152,8 @@ let gameRunning = false;
 let comboSaveUsed = false;
 let timerInterval = undefined;
 let keyHandler = undefined;
+let cooldownEndTime = 0;
+let durationEndTime = 0;
 const autoSkillbtn = document.querySelector(".auto-skill-btn");
 const autoSkillnameEl = document.querySelector(".auto-skill-name");
 const autoSkilltimeEl = document.querySelector(".auto-skill-time");
@@ -173,10 +175,10 @@ function updateAutoSkillDisplay() {
         autoSkilltimeEl.textContent = `終了まで${Math.ceil(autoSkillRemain / 1000)}s`;
     } else if (autoSkillCooldown) {
         autoSkillnameEl.textContent = skill.name;
-        autoSkilltimeEl.textContent = `再度使えるまで${Math.ceil(autoSkillCooldownRemain / 1000)}s`;
+        autoSkilltimeEl.textContent = `クールダウン${Math.ceil(autoSkillCooldownRemain / 1000)}s`;
     } else {
         autoSkillnameEl.textContent = skill.name;
-        autoSkilltimeEl.textContent = "";
+        autoSkilltimeEl.textContent = "使用可能";
     }
 }
 function stopGame() {
@@ -261,29 +263,32 @@ function getAutoTypeSkillData() {
     }
 }
 function startAutoTypeSkill() {
+    if (autoSkillCooldown) return;
+    if (autoSkillActive) return;
+    if (!gameRunning) return;
     const data = getAutoTypeSkillData();
     if (!data) return;
-    if (autoSkillActive) return;
-    if (autoSkillCooldown) return;
-    if (!gameRunning) return;
+    durationEndTime = Date.now() + data.duration;
+    cooldownEndTime = Date.now() + data.duration + data.cooldown;
     autoSkillActive = true;
     autoSkillCooldown = true;
     autoSkillRemain = data.duration;
-    autoSkillCooldownRemain = data.cooldown;
+    autoSkillCooldownRemain = data.duration + data.cooldown;
     updateAutoSkillDisplay();
     if (autoSkillDisplayTimer) {
         clearInterval(autoSkillDisplayTimer);
     }
     autoSkillDisplayTimer = setInterval(() => {
+        const nowTime = Date.now();
         if (autoSkillActive) {
-            autoSkillRemain -= 100;
+            autoSkillRemain = durationEndTime - nowTime;
             if (autoSkillRemain <= 0) {
                 autoSkillRemain = 0;
                 autoSkillActive = false;
             }
         }
         if (autoSkillCooldown) {
-            autoSkillCooldownRemain -= 100;
+            autoSkillCooldownRemain = cooldownEndTime - nowTime;
             if (autoSkillCooldownRemain <= 0) {
                 autoSkillCooldownRemain = 0;
                 autoSkillCooldown = false;
@@ -326,10 +331,7 @@ function startAutoTypeSkill() {
         }
         autoSkillActive = false;
     }, data.duration);
-    autoSkillCooldownTimer = setTimeout(() => {
-        autoSkillCooldown = false;
-    }, data.cooldown);
-}
+    }
 function stopAutoTypeSkill() {
     autoSkillActive = false;
     autoSkillCooldown = false;
@@ -484,40 +486,40 @@ function renderSkills() {
                 </div>
                 <button class="buy-btn ${btnClass}" data-id="${skill.id}">${btnText}</button>
                 `;
-                skillList.appendChild(div);
-            });
-        }
-        async function saveMoney() {
-            const ref = doc(db, "users", userId);
-            const snap = await getDoc(ref);
-            if (snap.exists()) {
-                await setDoc(ref, {
-                    userId: userId,
-                    name: userName,
-                    money: money,
-                    skills: userSkills,
-                    equippedSkill: equippedSkill,
-                    updateAt: new Date()
-                });
-            } else {
-                await setDoc(ref, {
-                    userId: userId,
-                    name: userName,
-                    money: money,
-                    skills: userSkills,
-                    equippedSkill: equippedSkill,
-                    createdAt: new Date()
-                });
-            }
-        }
-        const homebtn = document.querySelector(".home-btn");
-        homebtn.onclick = function() {
-            stopGame();
-            resetgame();
-            const typingscreen = document.querySelector(".typing-screen");
-            const resultscreen = document.querySelector(".result-screen");
-            typingscreen.style.display = "none";
-            resultscreen.style.display = "none";
+        skillList.appendChild(div);
+    });
+}
+async function saveMoney() {
+    const ref = doc(db, "users", userId);
+    const snap = await getDoc(ref);
+    if (snap.exists()) {
+        await setDoc(ref, {
+            userId: userId,
+            name: userName,
+            money: money,
+            skills: userSkills,
+            equippedSkill: equippedSkill,
+            updateAt: new Date()
+        });
+    } else {
+        await setDoc(ref, {
+            userId: userId,
+            name: userName,
+            money: money,
+            skills: userSkills,
+            equippedSkill: equippedSkill,
+            createdAt: new Date()
+        });
+    }
+}
+const homebtn = document.querySelector(".home-btn");
+homebtn.onclick = function () {
+    stopGame();
+    resetgame();
+    const typingscreen = document.querySelector(".typing-screen");
+    const resultscreen = document.querySelector(".result-screen");
+    typingscreen.style.display = "none";
+    resultscreen.style.display = "none";
     startbtn.style.display = "flex";
     rankingbtn.style.display = "flex";
     skillshopbtn.style.display = "flex";
@@ -532,14 +534,14 @@ skillList.addEventListener("click", async (e) => {
     if (!e.target.classList.contains("buy-btn")) return;
     const id = e.target.dataset.id;
     const skill = skills.find(s => s.id === id);
-    
+
     // 未購入なら購入
     if (!userSkills[id]) {
         if (money < skill.price) {
             alert("お金が足りません！！");
             return;
         }
-        
+
         alert(skill.name + "を購入した！！");
         money -= skill.price;
         userSkills[id] = true;
@@ -566,7 +568,7 @@ skillList.addEventListener("click", async (e) => {
 });
 const shopscreen = document.querySelector(".skill-shop-screen");
 const shopclose = document.querySelector(".shop-close");
-skillshopbtn.onclick = function() {
+skillshopbtn.onclick = function () {
     shopscreen.style.display = "flex";
     startbtn.style.display = "none";
     rankingbtn.style.display = "none";
@@ -593,14 +595,15 @@ skillremovebtn.onclick = async function () {
     renderSkills();
     updateMoney();
 };
-shopclose.onclick = function() {
-        shopscreen.style.display = "none";
-        startbtn.style.display = "flex";
-        rankingbtn.style.display = "flex";
-        skillshopbtn.style.display = "flex";
-    };
+shopclose.onclick = function () {
+    shopscreen.style.display = "none";
+    startbtn.style.display = "flex";
+    rankingbtn.style.display = "flex";
+    skillshopbtn.style.display = "flex";
+};
 const keys = {};
 document.addEventListener("keydown", async (e) => {
+    if (gameRunning) return;
     keys[e.key.toLowerCase()] = true;
     if (keys["shift"] && keys["s"] && keys["p"]) {
         const input = prompt("Please enter the cheat pass");
@@ -651,7 +654,7 @@ document.addEventListener("keydown", async (e) => {
 document.addEventListener("keyup", (e) => {
     keys[e.key.toLowerCase()] = false;
 });
-startbtn.onclick = function() {
+startbtn.onclick = function () {
     stopGame();
     resultShown = false;
     gameRunning = true;
@@ -722,7 +725,7 @@ startbtn.onclick = function() {
         { kana: "自動販売機", roma: "jidouhannbaiki" },
         { kana: "集団組織", roma: "syuudannsosiki" },
         { kana: "必要不可欠", roma: "hituyouhukaketu" },
-        { kana: "雰囲気", roma: "hunniki"},
+        { kana: "雰囲気", roma: "hunniki" },
         { kana: "環境保護", roma: "kannkyouhogo" },
         { kana: "フィンセント・ファン・ゴッホ", roma: "finnsenntofanngohho" },
         { kana: "最大公約数", roma: "saidaikouyakusuu" },
@@ -760,7 +763,7 @@ startbtn.onclick = function() {
 
         currentindex = 0;
     }
-    keyHandler = function(e) {
+    keyHandler = function (e) {
         if (!gameRunning) return;
         if (e.code === "Space") {
             e.preventDefault();
@@ -768,7 +771,7 @@ startbtn.onclick = function() {
             return;
         }
         const key = e.key.toLowerCase();
-        if (key.length !== 1)return;
+        if (key.length !== 1) return;
         if (key === currentword.roma[currentindex]) {
             const spans = typeroma.querySelectorAll("span");
             if (spans[currentindex]) {
@@ -818,7 +821,7 @@ startbtn.onclick = function() {
 const rankingscreen = document.querySelector(".ranking-screen");
 const rankinglist = document.querySelector(".ranking-list");
 const closebtn2 = document.querySelector(".close-btn2");
-rankingbtn.onclick = async function() {
+rankingbtn.onclick = async function () {
     rankingscreen.style.display = "flex";
     startbtn.style.display = "none";
     rankingbtn.style.display = "none";
@@ -860,7 +863,7 @@ rankingbtn.onclick = async function() {
         prevScore = data.score;
     });
 };
-closebtn2.onclick = function() {
+closebtn2.onclick = function () {
     rankingscreen.style.display = "none";
     startbtn.style.display = "flex";
     rankingbtn.style.display = "flex";
