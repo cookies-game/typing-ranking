@@ -654,6 +654,42 @@ document.addEventListener("keydown", async (e) => {
 document.addEventListener("keyup", (e) => {
     keys[e.key.toLowerCase()] = false;
 });
+const initbtn = document.querySelector(".init-btn");
+const initscreen = document.querySelector(".init-screen");
+const initscreenshadow = document.querySelector(".init-screen-shadow");
+initbtn.onclick = function() {
+    initscreen.style.display = "flex";
+    initscreenshadow.style.display = "flex";
+    startbtn.style.display = "none";
+    rankingbtn.style.display = "none";
+    skillshopbtn.style.display = "none";
+}
+const closebtn3 = document.querySelector(".close-btn3");
+closebtn3.onclick = function() {
+    initscreen.style.display = "none";
+    initscreenshadow.style.display = "none";
+    startbtn.style.display = "flex";
+    rankingbtn.style.display = "flex";
+    skillshopbtn.style.display = "flex";
+}
+const initbtn2 = document.querySelector(".init-btn2");
+initbtn2.onclick = async function() {
+    if (!confirm("本当に初期化しますか？")) return;
+    if (!confirm("初期化したらお金もスキルも無くなります")) return;
+    if (!confirm("初期化したら二度と元に戻せません それでも初期化しますか？")) return;
+    localStorage.removeItem("userId");
+    localStorage.removeItem("userName");
+    const ref = doc(db, "users", userId);
+    await setDoc(ref, {
+        userId: null,
+        name: null,
+        money: 0,
+        skills: {},
+        equippedSkill: null
+    });
+    alert("データを初期化しました");
+    location.reload();
+};
 startbtn.onclick = function () {
     stopGame();
     resultShown = false;
@@ -684,9 +720,17 @@ startbtn.onclick = function () {
     async function saveScore() {
         const ref = doc(db, "scores", today, "users", userId);
         const snap = await getDoc(ref);
-        if (snap.exists()) {
+        const newScore = score;
+        if (!snap.exists()) {
+            await setDoc(ref, {
+                userId: userId,
+                name: userName,
+                score: score,
+                createdAt: new Date()
+            });
+        } else {
             const oldScore = snap.data().score;
-            if (score > oldScore) {
+            if (newScore > oldScore) {
                 await setDoc(ref, {
                     userId: userId,
                     name: userName,
@@ -694,13 +738,6 @@ startbtn.onclick = function () {
                     updateAt: new Date()
                 });
             }
-        } else {
-            await setDoc(ref, {
-                userId: userId,
-                name: userName,
-                score: score,
-                createdAt: new Date()
-            });
         }
     }
     async function showResult() {

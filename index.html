@@ -1,15 +1,20 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <link rel="stylesheet" href="./style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Kalam:wght@300;400;700&family=Playwrite+IE:wght@100..400&family=Shippori+Mincho&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Jolly+Lodger&family=Kalam:wght@300;400;700&family=Playwrite+IE:wght@100..400&family=Shippori+Mincho&display=swap" rel="stylesheet">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>typing competition to rank</title>
     <script type="module" src="./game.js" defer></script>
 </head>
+
 <body>
     <div class="game-screen">
         <h1 class="title">タイピングマラソン</h1>
@@ -20,11 +25,29 @@
             </div>
             <button class="skill-shop-btn">スキルショップ🏪</button>
         </div>
-            <button class="setting-btn">
-                ⚙️
-            </button>
-            <div class="money-shadow"></div>
-            <div class="money-display">🪙<span class="money">0</span></div>
+        <button class="setting-btn">
+            ⚙️
+        </button>
+        <button class="init-btn">
+            Initialization
+        </button>
+        <div class="money-shadow"></div>
+        <div class="money-display">🪙<span class="money">0</span></div>
+    </div>
+    <div class="init-screen-shadow"></div>
+    <div class="init-screen">
+        <h2 class="init-title">
+            ⚠️本当にデータを初期化しますか？⚠️
+        </h2>
+        <p class="init-title2">
+            1度初期化したら元には戻せません。
+        </p>
+        <button class="init-btn2">
+            初期化
+        </button>
+        <button class="close-btn3">
+            閉じる
+        </button>
     </div>
     <div class="setting-screen-shadow"></div>
     <div class="setting-screen">
@@ -99,4 +122,5 @@
         </button>
     </div>
 </body>
+
 </html>
