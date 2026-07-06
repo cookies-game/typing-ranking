@@ -5,10 +5,15 @@
     <link rel="stylesheet" href="./style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Kalam:wght@300;400;700&family=Playwrite+IE:wght@100..400&family=Shippori+Mincho&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Kalam:wght@300;400;700&family=Playwrite+IE:wght@100..400&family=Shippori+Mincho&display=swap"
+        rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Jolly+Lodger&family=Kalam:wght@300;400;700&family=Playwrite+IE:wght@100..400&family=Shippori+Mincho&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Jolly+Lodger&family=Kalam:wght@300;400;700&family=Playwrite+IE:wght@100..400&family=Shippori+Mincho&display=swap"
+        rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>typing competition to rank</title>
@@ -121,6 +126,12 @@
             戻る
         </button>
     </div>
+
+    <script>
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("sw.js");
+        }
+    </script>
 </body>
 
 </html>
